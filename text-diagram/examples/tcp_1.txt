@@ -1,0 +1,4 @@
+note right of Server: Wait for client
+Client->Server: SYNC
+note right of Server: Received SYNC, send SYNC + ACK
+

@@ -1,0 +1,4 @@
+object x
+object y
+object z
+z->x

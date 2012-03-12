@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Text Diagram</title>
+		<link rel="stylesheet" type="text/css" href="style.css" />
+
+	<script language="javascript">var ie = 0; </script>
+	<script language="vbscript">ie = 1</script>
+	</head>
+	<body>
+		<div id='header'><a href='contact.htm'>Contact</a></div>
+		<textarea id='src' class='code_box' rows="13" cols="80" style=''>
+object April Todd Monad
+note left of April: Lunch is ready
+April->Todd: Todd, what are you doing?
+note right of Todd: Programming @_@
+Todd->April: Well, I'm programming.
+April->Monad: And you?
+Monad->April: I'm reading book.
+April->Monad: Good boy!
+note right of Monad: Smile ^_^</textarea>
+
+		<div id='btn_div'>
+			<button class='btn white' onclick='javascript:draw();'>Run</button>
+		</div>
+		
+		<div id='msg' style='color:red'></div>
+		<div id='canvas'></div>
+
+		<script src='text-diagram.js'></script>
+		<script>
+			function message(text) {
+				var msg = document.getElementById('msg');
+				msg.innerHTML = text;			
+			}
+
+			function clear_canvas() {
+				var canvas = document.getElementById('canvas');
+
+				if (canvas.hasChildNodes() ) {
+    				while (canvas.childNodes.length >= 1) {
+						canvas.removeChild( canvas.firstChild );       
+    				}
+				}
+			}
+
+			function draw() {
+				clear_canvas();
+				message('');
+				
+				var src = document.getElementById('src');
+				var dom_ele = sequence_diagram(src.value);
+				if (null != dom_ele) {
+					var canvas = document.getElementById('canvas');
+					canvas.appendChild(dom_ele);					
+				}
+				else {
+					message('Syntax error');
+				}
+			}
+
+			draw();
+		</script>
+	</body>
+</html>
+

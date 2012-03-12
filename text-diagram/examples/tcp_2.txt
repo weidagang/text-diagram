@@ -1,0 +1,8 @@
+note left of Server: LISTEN
+Client->Server: #1 SYNC
+note right of Client: SYNC_SENT
+note left of Server: SYNC-RECEIVED
+Server->Client: #2 SYNC + ACK
+note right of Client: ESTABLISHED
+Client->Server: #3 ACK
+note left of Server: ESTABLISHED

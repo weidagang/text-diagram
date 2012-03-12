@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<style type="text/css">
+			pre {
+				font-family: 'Lucida Console', 'Bitstream Vera Sans Mono', 'Courier New';
+			}
+ 		</style>
+
+		<script>
+		function gup(name) {
+			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+			var regexS = "[\\?&]" + name + "=([^&#]*)";
+			var regex = new RegExp(regexS);
+			var results = regex.exec(window.location.href);
+			return null == results ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+		}
+		</script>
+	</head>
+	<body>
+		<div id='container'></div>
+
+		<script src='text-diagram.js'></script>
+		<script>
+			var src1 = 'Todd->April:April, what\'re you doing?; note right of April: Shopping on taobao.; April->Todd:Well, I\'m taobaoing.;Todd->Monad:And you?;Monad->Todd:I\'m reading book.;Todd->Monad:Good boy!;';
+			var src2 = 'Client->Server:withdraw(account_id, amount);Server->Client:OK (lost); Client->Server:withdraw(account_id, amount);Server->Client:OK;';
+			var tokens = parser.lexical_analyze(gup('q'));
+			var ast = parser.syntax_analyze(tokens);
+			if(null != ast) {
+				var ccanvas = html_render.to_cimage(ast);
+				var ele = html_render.to_html(ccanvas);
+				var container = document.getElementById('container');
+				container.appendChild(ele);
+			}
+		</script>
+	</body>
+</html>
+

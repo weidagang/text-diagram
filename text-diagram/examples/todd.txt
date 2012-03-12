@@ -1,0 +1,6 @@
+Todd->April: April, what're you doing?
+note right of April: Shopping on taobao.
+April->Todd: Well, I'm taobaoing.
+Todd->Monad: And you?
+Monad->Todd: I'm reading book.
+Todd->Monad: Good boy!
