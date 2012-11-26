@@ -1,5 +1,5 @@
 /*!
- * text-diagram.js v0.1.1
+ * text-diagram.js v0.1.2
  * http://textdiagram.sinaapp.com
  *
  * Copyright 2011, Todd Wei
@@ -7,7 +7,7 @@
  * 
  * Contact: weidagang@gmail.com
  *
- * Date: 2011-10-04
+ * Date: 2012-11-26
  */
 
 /*!
@@ -304,7 +304,7 @@ var html_render = (function() {
 				var obj = ast.attr.object;
 				var side = ast.attr.side;
 				var content = ast.attr.content;
-				var cnote = _cnote(content);
+				var cnote = _cnote(content, 'left' == side);
 				if ('right' == side) {
 					_draw_cpoints(ccanvas, meta.lines[obj].x_offset + 2 - meta.min_x, ast.meta.y1, cnote);			
 				}
@@ -337,35 +337,45 @@ var html_render = (function() {
 		return msg.length + 2;	
 	}
 
-	function _cnote(msg) {
+	function _cnote(msg, is_left) {
 		var i;
 		var x = _note_width(msg);	
 		var y = 3;
 		
 		var out_cimage = [];
-	
+        
+        //association line 
+        if (is_left) {
+            out_cimage.push(_cpoint('-', x, 1, 0));
+            xoffset = 0;
+        }
+        else {
+            out_cimage.push(_cpoint('-', 0, 1, 0));
+            xoffset = 1;
+        }
+        
 		//up and bottom line
-		out_cimage.push(_cpoint('/', 0, 0, 0));
-		out_cimage.push(_cpoint('-', x - 1, 0, 0));
-		out_cimage.push(_cpoint('-', 0, 2, 0));
-		out_cimage.push(_cpoint('/', x - 1, 2, 0));
+		out_cimage.push(_cpoint('/', xoffset + 0, 0, 0));
+		out_cimage.push(_cpoint('-', xoffset + x - 1, 0, 0));
+		out_cimage.push(_cpoint('-', xoffset + 0, 2, 0));
+		out_cimage.push(_cpoint('-', xoffset + x - 1, 2, 0));
 		for (i = 1; i < x - 1; ++i) {
-			out_cimage.push(_cpoint('-', i, 0, 0)); 
-			out_cimage.push(_cpoint('-', i , 2, 0)); 
+			out_cimage.push(_cpoint('-', xoffset + i, 0, 0)); 
+			out_cimage.push(_cpoint('-', xoffset + i , 2, 0)); 
 		}
 
 		//left and right line
-		out_cimage.push(_cpoint('|', 0, 1, 0));
-		out_cimage.push(_cpoint('|', x - 1, 1, 0));
+		out_cimage.push(_cpoint('|', xoffset + 0, 1, 0));
+		out_cimage.push(_cpoint('|', xoffset + x - 1, 1, 0));
 
 		//name
 		for (i = 1; i < x-1; ++i) {
-			out_cimage.push(_cpoint(' ', i, 1, 0)); 
+			out_cimage.push(_cpoint(' ', xoffset + i, 1, 0)); 
 		}
 		for (i = 2; i < 2 + msg.length; ++i) {
-			out_cimage.push(_cpoint(msg.charAt(i-2), i, 1, 0)); 
+			out_cimage.push(_cpoint(msg.charAt(i-2), xoffset + i, 1, 0)); 
 		}
-
+                
 		return out_cimage;
 	}
 
