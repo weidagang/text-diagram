@@ -2,7 +2,7 @@ TextDiagam is a web tool for drawing UML sequence diagram in pure text.
 
 http://weidagang.github.com/text-diagram
 
-**Input:**
+Input:
 
 ```
 object April Todd Monad
@@ -14,9 +14,9 @@ April->Monad: And you?
 Monad->April: I'm reading book.
 April->Monad: Good boy!
 note right of Monad: ^_^
-```
 
-**Output:**
+
+Output:
 
                +-------+                       +-------+   +-------+
                | April |                       | Todd  |   | Monad |
