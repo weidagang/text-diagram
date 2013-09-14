@@ -16,7 +16,7 @@ April->Monad: Good boy!
 note right of Monad: ^_^
 ```
 
-***Output:***
+**Output:**
 
                +-------+                       +-------+   +-------+
                | April |                       | Todd  |   | Monad |
