@@ -5,41 +5,41 @@ Input:
 object April Todd Monad
 note left of April: Lunch is ready
 April->Todd: Todd, what are you doing?
-note right of Todd: Programming @_@
+note right of Todd: @_@
 Todd->April: Well, I'm programming.
 April->Monad: And you?
 Monad->April: I'm reading book.
 April->Monad: Good boy!
-note right of Monad: Smile ^_^
+note right of Monad: ^_^
 
 
 Output:
 
-               +-------+                       +-------+               +-------+
-               | April |                       | Todd  |               | Monad |
-               +-------+                       +-------+               +-------+
------------------\ |                               |                       |
-| Lunch is ready |-|                               |                       |
------------------- |                               |                       |
-                   |                               |                       |
-                   | Todd, what are you doing?     |                       |
-                   |------------------------------>|                       |
-                   |                               | ------------------\   |
-                   |                               |-| Programming @_@ |   |
-                   |                               | -------------------   |
-                   |                               |                       |
-                   |        Well, I'm programming. |                       |
-                   |<------------------------------|                       |
-                   |                               |                       |
-                   | And you?                      |                       |
-                   |------------------------------------------------------>|
-                   |                               |                       |
-                   |                               |     I'm reading book. |
-                   |<------------------------------------------------------|
-                   |                               |                       |
-                   | Good boy!                     |                       |
-                   |------------------------------------------------------>|
-                   |                               |                       | ------------\
-                   |                               |                       |-| Smile ^_^ |
-                   |                               |                       | -------------
-                   |                               |                       |
+               +-------+                       +-------+   +-------+
+               | April |                       | Todd  |   | Monad |
+               +-------+                       +-------+   +-------+
+-----------------\ |                               |           |
+| Lunch is ready |-|                               |           |
+------------------ |                               |           |
+                   |                               |           |
+                   | Todd, what are you doing?     |           |
+                   |------------------------------>|           |
+                   |                               | ------\   |
+                   |                               |-| @_@ |   |
+                   |                               | -------   |
+                   |                               |           |
+                   |        Well, I'm programming. |           |
+                   |<------------------------------|           |
+                   |                               |           |
+                   | And you?                      |           |
+                   |------------------------------------------>|
+                   |                               |           |
+                   |                         I'm reading book. |
+                   |<------------------------------------------|
+                   |                               |           |
+                   | Good boy!                     |           |
+                   |------------------------------------------>|
+                   |                               |           | ------\
+                   |                               |           |-| ^_^ |
+                   |                               |           | -------
+                   |                               |           |
