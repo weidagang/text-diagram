@@ -1,7 +1,10 @@
-TextDiagam is a web tool for drawing UML sequence diagram in pure text. http://weidagang.github.com/text-diagram
+TextDiagam is a web tool for drawing UML sequence diagram in pure text. 
 
-Input:
+http://weidagang.github.com/text-diagram
 
+**Input:**
+
+```
 object April Todd Monad
 note left of April: Lunch is ready
 April->Todd: Todd, what are you doing?
@@ -11,9 +14,9 @@ April->Monad: And you?
 Monad->April: I'm reading book.
 April->Monad: Good boy!
 note right of Monad: ^_^
+```
 
-
-Output:
+***Output:***
 
                +-------+                       +-------+   +-------+
                | April |                       | Todd  |   | Monad |
