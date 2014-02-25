@@ -9,7 +9,7 @@ note left of April: Lunch is ready
 April->Todd: Todd, what are you doing?
 note right of Todd: @_@
 Todd->April: Well, I'm programming.
-April->Monad: And you?
+April->Monad: How about you?
 Monad->April: I'm reading book.
 April->Monad: Good boy!
 note right of Monad: ^_^
@@ -33,7 +33,7 @@ Output:
                    |        Well, I'm programming. |           |
                    |<------------------------------|           |
                    |                               |           |
-                   | And you?                      |           |
+                   | How about you?                |           |
                    |------------------------------------------>|
                    |                               |           |
                    |                         I'm reading book. |
