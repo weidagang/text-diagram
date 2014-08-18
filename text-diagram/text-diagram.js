@@ -186,6 +186,17 @@ var html_render = (function() {
 					}
 				}
 			}
+			//// previous self message
+			if (i > 0) {
+				var pre_obj = meta.objs[i-1];
+				for (var j = 0; j < meta.messages[pre_obj].length; ++j) {
+					var tmp_ast = meta.messages[pre_obj][j];
+					if (tmp_ast.meta.sender_index == tmp_ast.meta.receiver_index) {
+						var message_width = _msg_width(tmp_ast.attr.message);
+						meta.boxes[obj].x1 = Math.max(meta.boxes[obj].x1, meta.lines[pre_obj].x_offset + 1 + message_width);
+					}
+				}
+			}
 
 			meta.boxes[obj].x2 = meta.boxes[obj].x1 + box_width;
 
@@ -204,7 +215,7 @@ var html_render = (function() {
 			for (var j = 0; j < meta.messages[obj].length; ++j) {
 				var tmp_ast = meta.messages[obj][j];
 				if (tmp_ast.meta.sender_index == tmp_ast.meta.receiver_index) {
-					var message_width = tmp_ast.attr.message.length;
+					var message_width = _msg_width(tmp_ast.attr.message);
 					meta.x_spans[obj].x2 = Math.max(meta.x_spans[obj].x2, meta.lines[obj].x_offset + 1 + message_width);
 				}
 			}
