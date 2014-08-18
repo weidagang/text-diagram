@@ -388,6 +388,7 @@ var html_render = (function() {
 
 		if (isSelfMessage) {
 			//message
+			line_len = message.length;
 			for (var i = 0; i < message.length; ++i) {
 				cpoints.push(_cpoint(message.charAt(i), 1 + i, 1, 0));
 			}
