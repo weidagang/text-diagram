@@ -201,6 +201,13 @@ var html_render = (function() {
 					meta.x_spans[obj].x2 = Math.max(meta.x_spans[obj].x2, meta.lines[obj].x_offset + 1 + note_width);
 				}
 			}
+			for (var j = 0; j < meta.messages[obj].length; ++j) {
+				var tmp_ast = meta.messages[obj][j];
+				if (tmp_ast.meta.sender_index == tmp_ast.meta.receiver_index) {
+					var message_width = tmp_ast.attr.message.length;
+					meta.x_spans[obj].x2 = Math.max(meta.x_spans[obj].x2, meta.lines[obj].x_offset + 1 + message_width);
+				}
+			}
 		}
 
 		//get canvas width
