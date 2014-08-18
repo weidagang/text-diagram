@@ -222,7 +222,14 @@ var html_render = (function() {
 				ast.meta.y2 = in_y_offset;
 			}
 			else if ('message_statement' == ast.type) {
-				ast.meta.y2 = in_y_offset + 3;
+				if (ast.meta.sender_index == ast.meta.receiver_index)
+				{
+					ast.meta.y2 = in_y_offset + 5;
+				}
+				else
+				{
+					ast.meta.y2 = in_y_offset + 3;
+				}
 			}
 			else if ('note_statement' == ast.type) {
 				ast.meta.y2 = in_y_offset + 3;
@@ -296,7 +303,7 @@ var html_render = (function() {
 				var rightObj = meta.obj_idxes[s] < meta.obj_idxes[r] ? r : s;
 				var line_len = meta.lines[rightObj].x_offset - meta.lines[leftObj].x_offset - 1; 
 
-				var cmessage = _cmessage(ast.attr.message, line_len, s == leftObj);
+				var cmessage = _cmessage(ast.attr.message, line_len, s == leftObj, s == r);
 
 				_draw_cpoints(ccanvas, meta.lines[leftObj].x_offset + 1 - meta.min_x, ast.meta.y1, cmessage);
 			}
@@ -376,10 +383,27 @@ var html_render = (function() {
 		return out_cimage;
 	}
 
-	function _cmessage(message, line_len, leftToRight) {
+	function _cmessage(message, line_len, leftToRight, isSelfMessage) {
 		var cpoints = [];
 
-		if (leftToRight) {
+		if (isSelfMessage) {
+			//message
+			for (var i = 0; i < message.length; ++i) {
+				cpoints.push(_cpoint(message.charAt(i), 1 + i, 1, 0));
+			}
+			
+			//arrow
+			for (var i = 0; i < line_len; ++i) {
+				cpoints.push(_cpoint('-', i, 2, 0));
+			}
+			cpoints.push(_cpoint('|', line_len - 1, 3, 0));
+			//arrow
+			cpoints.push(_cpoint('<', 0, 4, 0));
+			for (var i = 1; i < line_len; ++i) {
+				cpoints.push(_cpoint('-', i, 4, 0));
+			}
+		}
+		else if (leftToRight) {
 			//message
 			for (var i = 0; i < message.length; ++i) {
 				cpoints.push(_cpoint(message.charAt(i), 1 + i, 1, 0));
