@@ -186,6 +186,17 @@ var html_render = (function() {
 					}
 				}
 			}
+			//// previous self message
+			if (i > 0) {
+				var pre_obj = meta.objs[i-1];
+				for (var j = 0; j < meta.messages[pre_obj].length; ++j) {
+					var tmp_ast = meta.messages[pre_obj][j];
+					if (tmp_ast.meta.sender_index == tmp_ast.meta.receiver_index) {
+						var message_width = _msg_width(tmp_ast.attr.message);
+						meta.boxes[obj].x1 = Math.max(meta.boxes[obj].x1, meta.lines[pre_obj].x_offset + 1 + message_width);
+					}
+				}
+			}
 
 			meta.boxes[obj].x2 = meta.boxes[obj].x1 + box_width;
 
@@ -199,6 +210,13 @@ var html_render = (function() {
 				var note_width = _note_width(note);
 				if ('right' == note.side) {
 					meta.x_spans[obj].x2 = Math.max(meta.x_spans[obj].x2, meta.lines[obj].x_offset + 1 + note_width);
+				}
+			}
+			for (var j = 0; j < meta.messages[obj].length; ++j) {
+				var tmp_ast = meta.messages[obj][j];
+				if (tmp_ast.meta.sender_index == tmp_ast.meta.receiver_index) {
+					var message_width = _msg_width(tmp_ast.attr.message);
+					meta.x_spans[obj].x2 = Math.max(meta.x_spans[obj].x2, meta.lines[obj].x_offset + 1 + message_width);
 				}
 			}
 		}
@@ -222,7 +240,14 @@ var html_render = (function() {
 				ast.meta.y2 = in_y_offset;
 			}
 			else if ('message_statement' == ast.type) {
-				ast.meta.y2 = in_y_offset + 3;
+				if (ast.meta.sender_index == ast.meta.receiver_index)
+				{
+					ast.meta.y2 = in_y_offset + 5;
+				}
+				else
+				{
+					ast.meta.y2 = in_y_offset + 3;
+				}
 			}
 			else if ('note_statement' == ast.type) {
 				ast.meta.y2 = in_y_offset + 3;
@@ -296,7 +321,7 @@ var html_render = (function() {
 				var rightObj = meta.obj_idxes[s] < meta.obj_idxes[r] ? r : s;
 				var line_len = meta.lines[rightObj].x_offset - meta.lines[leftObj].x_offset - 1; 
 
-				var cmessage = _cmessage(ast.attr.message, line_len, s == leftObj);
+				var cmessage = _cmessage(ast.attr.message, line_len, s == leftObj, s == r);
 
 				_draw_cpoints(ccanvas, meta.lines[leftObj].x_offset + 1 - meta.min_x, ast.meta.y1, cmessage);
 			}
@@ -376,10 +401,28 @@ var html_render = (function() {
 		return out_cimage;
 	}
 
-	function _cmessage(message, line_len, leftToRight) {
+	function _cmessage(message, line_len, leftToRight, isSelfMessage) {
 		var cpoints = [];
 
-		if (leftToRight) {
+		if (isSelfMessage) {
+			//message
+			line_len = message.length;
+			for (var i = 0; i < message.length; ++i) {
+				cpoints.push(_cpoint(message.charAt(i), 1 + i, 1, 0));
+			}
+			
+			//arrow
+			for (var i = 0; i < line_len; ++i) {
+				cpoints.push(_cpoint('-', i, 2, 0));
+			}
+			cpoints.push(_cpoint('|', line_len - 1, 3, 0));
+			//arrow
+			cpoints.push(_cpoint('<', 0, 4, 0));
+			for (var i = 1; i < line_len; ++i) {
+				cpoints.push(_cpoint('-', i, 4, 0));
+			}
+		}
+		else if (leftToRight) {
 			//message
 			for (var i = 0; i < message.length; ++i) {
 				cpoints.push(_cpoint(message.charAt(i), 1 + i, 1, 0));
