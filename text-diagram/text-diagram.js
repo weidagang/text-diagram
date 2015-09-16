@@ -15,13 +15,15 @@
  *
  * <program> ::= <empty> | <statements>
  * <statements> ::= <statement> <statements>
- * <statement> ::= <object-declaration> | <message-statement> | <note-statement>
+ * <statement> ::= <object-declaration> | <message-statement> | <note-statement> | <space-statement>
  * <object-declaration> ::= "object" <object> <EOS>
  * <message-statement> ::= <object> "->" <object> <content> <EOS>
  * <note-statement> ::= <side> "of" <object> <note> <EOS>
+ * <space-statement> ::= <size>
  * <object> ::= ([a-z]|[A-Z]|[0-9]|_)+
  * <content> ::= <empty> | ":" <text>
  * <note> ::= ":" <text>
+ * <size> ::= <integer>
  * <EOS> ::= ';' | '\n' | EOF
  */
 
