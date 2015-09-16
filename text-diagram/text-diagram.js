@@ -247,11 +247,11 @@ var html_render = (function() {
 			else if ('message_statement' == ast.type) {
 				if (ast.meta.sender_index == ast.meta.receiver_index)
 				{
-					ast.meta.y2 = in_y_offset + 5;
+					ast.meta.y2 = in_y_offset + 4 + ast.attr.message.split('\\n').length;
 				}
 				else
 				{
-					ast.meta.y2 = in_y_offset + 3;
+					ast.meta.y2 = in_y_offset + 2 + ast.attr.message.split('\\n').length;;
 				}
 			}
 			else if ('note_statement' == ast.type) {
@@ -378,7 +378,14 @@ var html_render = (function() {
 	}
 
 	function _msg_width(msg) {
-		return msg.length + 2;
+		var lines = msg.split('\\n');
+		var max = 0;
+		for (var i = 0; i < lines.length; ++i) {
+				if (lines[i].length > max) {
+						max = lines[i].trim().length;
+				}
+		}
+		return max + 2;
 	}
 
     // create image for note
@@ -433,50 +440,64 @@ var html_render = (function() {
 	function _cmessage(message, line_len, leftToRight, isSelfMessage) {
 		var cpoints = [];
 
+		var lines = message.split('\\n');
+		var t_length = 0;
+		for(var idx = 0; idx < lines.length; idx++) {
+			if(lines[idx].length > t_length) {
+				t_length = lines[idx].trim().length;
+			}
+		}
+
 		if (isSelfMessage) {
-			line_len = message.length;
+			line_len = t_length;
 
 			//message
-			for (var i = 0; i < message.length; ++i) {
-				cpoints.push(_cpoint(message.charAt(i), 1 + i, 1, 0));
+			for(var idx = 0; idx < lines.length; idx++) {
+				for (var i = 0; i < lines[idx].length; ++i) {
+					cpoints.push(_cpoint(lines[idx].charAt(i), 1 + i, 1 + idx, 0));
+				}
 			}
 
 			//upper line
 			for (var i = 0; i < line_len + 1; ++i) {
-				cpoints.push(_cpoint('-', i, 2, 0));
+				cpoints.push(_cpoint('-', i, 1 + lines.length, 0));
 			}
 
             //bar
-			cpoints.push(_cpoint('|', line_len, 3, 0));
+			cpoints.push(_cpoint('|', line_len, 2 + lines.length, 0));
 
 			//lower line
-			cpoints.push(_cpoint('<', 0, 4, 0));
+			cpoints.push(_cpoint('<', 0, 3 + lines.length, 0));
 			for (var i = 1; i < line_len + 1; ++i) {
-				cpoints.push(_cpoint('-', i, 4, 0));
+				cpoints.push(_cpoint('-', i, 3 + lines.length, 0));
 			}
 		}
 		else if (leftToRight) {
 			//message
-			for (var i = 0; i < message.length; ++i) {
-				cpoints.push(_cpoint(message.charAt(i), 1 + i, 1, 0));
+			for(var idx = 0; idx < lines.length; idx++) {
+				for (var i = 0; i < lines[idx].length; ++i) {
+					cpoints.push(_cpoint(lines[idx].charAt(i), 1 + i, 1 + idx, 0));
+				}
 			}
 
 			//arrow
 			for (var i = 0; i < line_len - 1; ++i) {
-				cpoints.push(_cpoint('-', i, 2, 0));
+				cpoints.push(_cpoint('-', i, 1 + lines.length, 0));
 			}
-			cpoints.push(_cpoint('>', line_len - 1, 2, 0));
+			cpoints.push(_cpoint('>', line_len - 1, 1 + lines.length, 0));
 		}
 		else {
 			//message
-			for (var i = 0; i < message.length; ++i) {
-				cpoints.push(_cpoint(message.charAt(message.length - 1 - i), line_len - 1 - i - 1, 1, 0));
+			for(var idx = 0; idx < lines.length; idx++) {
+				for (var i = 0; i < lines[idx].length; ++i) {
+					cpoints.push(_cpoint(lines[idx].charAt(lines[idx].length - 1 - i), line_len - 1 - i - 1, 1 + idx, 0));
+				}
 			}
 
 			//arrow
-			cpoints.push(_cpoint('<', 0, 2, 0));
+			cpoints.push(_cpoint('<', 0, 1 + lines.length, 0));
 			for (var i = 1; i < line_len; ++i) {
-				cpoints.push(_cpoint('-', i, 2, 0));
+				cpoints.push(_cpoint('-', i, 1 + lines.length, 0));
 			}
 		}
 
