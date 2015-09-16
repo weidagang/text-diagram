@@ -257,6 +257,9 @@ var html_render = (function() {
 			else if ('note_statement' == ast.type) {
 				ast.meta.y2 = in_y_offset + 2 + ast.attr.content.split('\\n').length;
 			}
+			else if ('space_statement' == ast.type) {
+				ast.meta.y2 = in_y_offset + ast.attr.gap_size;
+			}
 			else {
 				var y_offset;
 				if ('sequence_diagram' == ast.type) {
@@ -728,6 +731,9 @@ var parser = (function() {
 				else if ('note' == value) {
 					r = _note_statement(in_tokens, idx);
 				}
+				else if ('space' == value) {
+					r = _space_statement(in_tokens, idx);
+				}
 				else {
 					r = _message_statement(in_tokens, idx);
 				}
@@ -763,7 +769,7 @@ var parser = (function() {
 	}
 
 	function _is_keyword(in_word) {
-		var keywords = { 'alt' : true, 'opt' : true, 'loop' : true, 'note' : true };
+		var keywords = { 'alt' : true, 'opt' : true, 'loop' : true, 'note' : true, 'space' : true };
 		return true == keywords[in_word];
 	}
 
@@ -812,6 +818,47 @@ var parser = (function() {
 
 		if (2 != state) {
 			return null;
+		}
+
+		match_result.length = i - in_offset;
+		return match_result;
+	}
+
+	function _space_statement(in_tokens, in_offset) {
+		var match_result = {
+			type : 'space_statement',
+	       	attr : { object : null, side : null, content: ''},
+			offset : in_offset,
+			length : 0
+		};
+
+		var state = 0;
+		for (var i = in_offset; i < in_tokens.length && 2 != state; ++i) {
+			var type = in_tokens[i].type;
+			var value = in_tokens[i].value;
+
+			switch(state) {
+				case 0: //'space'
+					if ('space' == type) {
+						continue;
+					}
+					if ('space' != value) {
+						return null;
+					}
+					state = 1;
+					break;
+				case 1: //number
+					if ('space' == type) {
+						continue;
+					}
+					var gap_size = parseInt(value);
+					if (isNaN(gap_size)) {
+						return null;
+					}
+					match_result.attr.gap_size = gap_size;
+					state = 2;
+					break;
+			}
 		}
 
 		match_result.length = i - in_offset;
