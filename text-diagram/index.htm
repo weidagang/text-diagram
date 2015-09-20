@@ -10,18 +10,20 @@
 	<body>
 		<div id='header'>
             <label><strong>Text Diagram</strong></label>
-            <a href='https://github.com/weidagang/text-diagram' style='padding-left: 20px'>Source Code</a> 
-            <a href='' style='padding-left: 10px' onclick='javascript:example(); return false;'>Example</a> 
+            <a href='https://github.com/weidagang/text-diagram' style='padding-left: 20px'>Source Code</a>
+            <a href='' style='padding-left: 10px' onclick='javascript:example(); return false;'>Example</a>
             <a href='contact.htm' style='padding-left: 10px'>About Me</a>
         </div>
-        
+
 		<textarea id='src' class='code_box' rows="13" cols="80" style='margin-top:10px;'>
 object April Todd Monad
 April->April: Prepare food for lunch.
+space 5
 note left of April: Lunch is ready.
 April->Todd: Todd, what are you doing?
 note right of Todd: Programming @_@
-Todd->April: Well, I'm programming.
+Todd->April: Well...\nI'm programming.
+space 5
 April->Monad: How about you?
 Monad->April: I'm reading book.
 April->Monad: Good boy!
@@ -30,7 +32,7 @@ note right of Monad: I'm so happy. \n ^_^</textarea>
 		<div id='btn_div'>
 			<button class='btn white' onclick='javascript:draw();'>Run</button>
 		</div>
-		
+
 		<div id='msg' style='color:red'></div>
 		<div id='canvas'></div>
 
@@ -38,7 +40,7 @@ note right of Monad: I'm so happy. \n ^_^</textarea>
 		<script>
 			function message(text) {
 				var msg = document.getElementById('msg');
-				msg.innerHTML = text;			
+				msg.innerHTML = text;
 			}
 
 			function clear_canvas() {
@@ -46,7 +48,7 @@ note right of Monad: I'm so happy. \n ^_^</textarea>
 
 				if (canvas.hasChildNodes() ) {
     				while (canvas.childNodes.length >= 1) {
-						canvas.removeChild( canvas.firstChild );       
+						canvas.removeChild( canvas.firstChild );
     				}
 				}
 			}
@@ -54,31 +56,34 @@ note right of Monad: I'm so happy. \n ^_^</textarea>
 			function draw() {
 				clear_canvas();
 				message('');
-				
+
 				var src = document.getElementById('src');
 				var dom_ele = sequence_diagram(src.value);
 				if (null != dom_ele) {
 					var canvas = document.getElementById('canvas');
-					canvas.appendChild(dom_ele);					
+					canvas.appendChild(dom_ele);
 				}
 				else {
 					message('Syntax error');
 				}
 			}
-            
+
             function example() {
                 var src = document.getElementById('src');
                 src.value =         "object April Todd Monad\n"
+										+ "April->April: Prepare food for lunch.\n"
+										+ "space 5\n"
                     + "note left of April: Lunch is ready\n"
                     + "April->Todd: Todd, what are you doing?\n"
                     + "note right of Todd: Programming @_@\n"
-                    + "Todd->April: Well, I'm programming.\n"
+                    + "Todd->April: Well...\\nI'm programming.\n"
+                    + "space 5\n"
                     + "April->Monad: How about you?\n"
                     + "Monad->April: I'm reading book.\n"
                     + "April->Monad: Good boy!\n"
-                    + "note right of Monad: ^_^\n"
+                    + "note right of Monad: I'm so happy. \\n ^_^\n"
                 ;
-                
+
                 draw();
             }
 
@@ -86,4 +91,3 @@ note right of Monad: I'm so happy. \n ^_^</textarea>
 		</script>
 	</body>
 </html>
-

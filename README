@@ -1,14 +1,17 @@
-TextDiagam is a web tool for drawing UML sequence diagram in pure text. 
+TextDiagam is a web tool for drawing UML sequence diagram in pure text.
 
 http://weidagang.github.com/text-diagram
 
 Input:
 
 object April Todd Monad
-note left of April: Lunch is ready
+April->April: Prepare food for lunch.
+space 5
+note left of April: Lunch is ready.
 April->Todd: Todd, what are you doing?
 note right of Todd: @_@
-Todd->April: Well, I'm programming.
+Todd->April: Well...\nI'm programming.
+space 5
 April->Monad: How about you?
 Monad->April: I'm reading book.
 April->Monad: Good boy!
@@ -17,31 +20,47 @@ note right of Monad: ^_^
 
 Output:
 
-               +-------+                       +-------+   +-------+
-               | April |                       | Todd  |   | Monad |
-               +-------+                       +-------+   +-------+
------------------\ |                               |           |
-| Lunch is ready |-|                               |           |
------------------- |                               |           |
-                   |                               |           |
-                   | Todd, what are you doing?     |           |
-                   |------------------------------>|           |
-                   |                               | ------\   |
-                   |                               |-| @_@ |   |
-                   |                               | -------   |
-                   |                               |           |
-                   |        Well, I'm programming. |           |
-                   |<------------------------------|           |
-                   |                               |           |
-                   | How about you?                |           |
-                   |------------------------------------------>|
-                   |                               |           |
-                   |                         I'm reading book. |
-                   |<------------------------------------------|
-                   |                               |           |
-                   | Good boy!                     |           |
-                   |------------------------------------------>|
-                   |                               |           | ------\
-                   |                               |           |-| ^_^ |
-                   |                               |           | -------
-                   |                               |           |
+                +-------+                       +-------+   +-------+
+                | April |                       | Todd  |   | Monad |
+                +-------+                       +-------+   +-------+
+                    |                               |           |
+                    | Prepare food for lunch.       |           |
+                    |------------------------       |           |
+                    |                       |       |           |
+                    |<-----------------------       |           |
+                    |                               |           |
+                    |                               |           |
+                    |                               |           |
+                    |                               |           |
+                    |                               |           |
+------------------\ |                               |           |
+| Lunch is ready. |-|                               |           |
+|-----------------| |                               |           |
+                    |                               |           |
+                    | Todd, what are you doing?     |           |
+                    |------------------------------>|           |
+                    |                               | ------\   |
+                    |                               |-| @_@ |   |
+                    |                               | |-----|   |
+                    |                               |           |
+                    |                       Well... |           |
+                    |              I'm programming. |           |
+                    |<------------------------------|           |
+                    |                               |           |
+                    |                               |           |
+                    |                               |           |
+                    |                               |           |
+                    |                               |           |
+                    |                               |           |
+                    | How about you?                |           |
+                    |------------------------------------------>|
+                    |                               |           |
+                    |                         I'm reading book. |
+                    |<------------------------------------------|
+                    |                               |           |
+                    | Good boy!                     |           |
+                    |------------------------------------------>|
+                    |                               |           | ------\
+                    |                               |           |-| ^_^ |
+                    |                               |           | |-----|
+                    |                               |           |

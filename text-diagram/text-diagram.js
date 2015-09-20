@@ -4,7 +4,7 @@
  *
  * Copyright 2011, Todd Wei
  * Dual licensed under the MIT or GPL Version 2 licenses.
- * 
+ *
  * Contact: weidagang@gmail.com
  *
  * Date: 2012-11-26
@@ -15,19 +15,21 @@
  *
  * <program> ::= <empty> | <statements>
  * <statements> ::= <statement> <statements>
- * <statement> ::= <object-declaration> | <message-statement> | <note-statement>
+ * <statement> ::= <object-declaration> | <message-statement> | <note-statement> | <space-statement>
  * <object-declaration> ::= "object" <object> <EOS>
  * <message-statement> ::= <object> "->" <object> <content> <EOS>
  * <note-statement> ::= <side> "of" <object> <note> <EOS>
+ * <space-statement> ::= <size>
  * <object> ::= ([a-z]|[A-Z]|[0-9]|_)+
- * <content> ::= <empty> | ":" <text> 
- * <note> ::= ":" <text> 
+ * <content> ::= <empty> | ":" <text>
+ * <note> ::= ":" <text>
+ * <size> ::= <integer>
  * <EOS> ::= ';' | '\n' | EOF
  */
 
 var nl = ie ? '\r' : '\n';
 
-//The main function to draw UML sequence diagram. 
+//The main function to draw UML sequence diagram.
 //There're 3 major steps:
 //  1) parse the source code into AST;
 //  2) convert the AST to ASCII image objects;
@@ -45,7 +47,7 @@ function sequence_diagram(in_src) {
 	return dom_ele;
 };
 
-//render diagram as html 
+//render diagram as html
 var html_render = (function() {
 	//cpoint
 	function _cpoint(in_c, in_x, in_y, in_z) {
@@ -64,7 +66,7 @@ var html_render = (function() {
 	//convert ccanvas to DOM element
 	function _to_html(in_m) {
 		var pre = document.createElement('pre');
-		
+
 		for (y = 0; y < in_m.length; ++y) {
 			for (x = 0; x < in_m[y].length; ++x) {
 				var c = in_m[y][x] ? in_m[y][x].c : ' ';
@@ -90,8 +92,8 @@ var html_render = (function() {
 		meta.statements = [];
 
 		function _traverse(ast) {
-			ast.meta = ast.meta || {};	
-            
+			ast.meta = ast.meta || {};
+
             // set index for each object (participant)
 			function _add_obj(obj) {
 				if (null == meta.obj_idxes[obj]) {
@@ -136,7 +138,7 @@ var html_render = (function() {
 				var obj = ast.attr.object;
 				var side = ast.attr.side;
 				var content = ast.attr.content;
-				
+
 				_add_obj(obj);
 
 				meta.notes[obj].push(ast);
@@ -169,8 +171,8 @@ var html_render = (function() {
 					meta.boxes[obj].x1 = Math.max(meta.boxes[obj].x1, pre_line_offset + 1 + note_width + 1 - half_box_width);
 				}
 			}
-			
-			//// previous right note	
+
+			//// previous right note
 			if (i > 0) {
 				var pre_obj = meta.objs[i-1];
 				for (var k = 0; k < meta.notes[pre_obj].length; ++k) {
@@ -179,7 +181,7 @@ var html_render = (function() {
 						meta.boxes[obj].x1 = Math.max(meta.boxes[obj].x1, meta.lines[pre_obj].x_offset + 1 + _note_width(note_ast.attr.content));
 					}
 				}
-			}	
+			}
 
 			//// message
 			for (var j = 0; j < i; j++) {
@@ -205,10 +207,10 @@ var html_render = (function() {
 
 			meta.boxes[obj].x2 = meta.boxes[obj].x1 + box_width;
 
-			// 2) line.x_offset 
+			// 2) line.x_offset
 			meta.lines[obj].x_offset = meta.boxes[obj].x1 + half_box_width;
 
-			// 3) x_span 
+			// 3) x_span
 			meta.x_spans[obj].x1 = meta.boxes[obj].x1;
 			for (var j = 0; j < meta.notes[obj].length; ++j) {
 				var note = meta.notes[obj][j];
@@ -247,17 +249,20 @@ var html_render = (function() {
 			else if ('message_statement' == ast.type) {
 				if (ast.meta.sender_index == ast.meta.receiver_index)
 				{
-					ast.meta.y2 = in_y_offset + 5;
+					ast.meta.y2 = in_y_offset + 4 + ast.attr.message.split('\\n').length;
 				}
 				else
 				{
-					ast.meta.y2 = in_y_offset + 3;
+					ast.meta.y2 = in_y_offset + 2 + ast.attr.message.split('\\n').length;;
 				}
 			}
 			else if ('note_statement' == ast.type) {
-				ast.meta.y2 = in_y_offset + 3;
+				ast.meta.y2 = in_y_offset + 2 + ast.attr.content.split('\\n').length;
 			}
-			else {	
+			else if ('space_statement' == ast.type) {
+				ast.meta.y2 = in_y_offset + ast.attr.gap_size;
+			}
+			else {
 				var y_offset;
 				if ('sequence_diagram' == ast.type) {
 					y_offset = 3;
@@ -277,7 +282,7 @@ var html_render = (function() {
 				else {
 					ast.meta.y2 = ast.meta.y1;
 				}
-				
+
 				if ('sequence_diagram' == ast.type) {
 					ast.meta.y2 += 1;
 				}
@@ -296,7 +301,7 @@ var html_render = (function() {
 		_add_meta(in_ast);
 
 		var meta = in_ast.meta;
-		
+
 		//init canvas
 		var ccanvas = _ccanvas(meta.width, meta.height);
 		//console.log(meta.width + ", " + meta.height);
@@ -324,7 +329,7 @@ var html_render = (function() {
 				var r = ast.attr.receiver;
 				var leftObj = meta.obj_idxes[s] < meta.obj_idxes[r] ? s : r;
 				var rightObj = meta.obj_idxes[s] < meta.obj_idxes[r] ? r : s;
-				var line_len = meta.lines[rightObj].x_offset - meta.lines[leftObj].x_offset - 1; 
+				var line_len = meta.lines[rightObj].x_offset - meta.lines[leftObj].x_offset - 1;
 
 				var cmessage = _cmessage(ast.attr.message, line_len, s == leftObj, s == r);
 
@@ -336,10 +341,10 @@ var html_render = (function() {
 				var content = ast.attr.content;
 				var cnote = _cnote(content, 'left' == side);
 				if ('right' == side) {
-					_draw_cpoints(ccanvas, meta.lines[obj].x_offset + 1 - meta.min_x, ast.meta.y1, cnote);			
+					_draw_cpoints(ccanvas, meta.lines[obj].x_offset + 1 - meta.min_x, ast.meta.y1, cnote);
 				}
 				else if ('left' == side) {
-					_draw_cpoints(ccanvas, meta.lines[obj].x_offset - 1 - _note_width(content) - meta.min_x, ast.meta.y1, cnote);			
+					_draw_cpoints(ccanvas, meta.lines[obj].x_offset - 1 - _note_width(content) - meta.min_x, ast.meta.y1, cnote);
 				}
 			}
 		}
@@ -364,7 +369,7 @@ var html_render = (function() {
                 max = lines[i].trim().length;
             }
         }
-		return max + 4;	
+		return max + 4;
 	}
 
     function _note_height(msg) {
@@ -374,22 +379,29 @@ var html_render = (function() {
     }
 
 	function _box_width(msg) {
-		return msg.length % 2 ? msg.length + 4 : msg.length + 5;	
+		return msg.length % 2 ? msg.length + 4 : msg.length + 5;
 	}
-	
+
 	function _msg_width(msg) {
-		return msg.length + 2;	
+		var lines = msg.split('\\n');
+		var max = 0;
+		for (var i = 0; i < lines.length; ++i) {
+				if (lines[i].length > max) {
+						max = lines[i].trim().length;
+				}
+		}
+		return max + 2;
 	}
-    
+
     // create image for note
 	function _cnote(msg, is_left) {
 		var i;
-		var x = _note_width(msg);	
+		var x = _note_width(msg);
 		var y = _note_height(msg);
-		
+
 		var out_cimage = [];
-        
-        //association line 
+
+        //association line
         if (is_left) {
             out_cimage.push(_cpoint('-', x, 1, 0));
             xoffset = 0;
@@ -398,11 +410,11 @@ var html_render = (function() {
             out_cimage.push(_cpoint('-', 0, 1, 0));
             xoffset = 1;
         }
-        
+
 		//up and bottom line
 		for (i = 0; i <= x - 1; ++i) {
-			out_cimage.push(_cpoint('-', xoffset + i, 0, 0)); 
-			out_cimage.push(_cpoint('-', xoffset + i , y - 1, 0)); 
+			out_cimage.push(_cpoint('-', xoffset + i, 0, 0));
+			out_cimage.push(_cpoint('-', xoffset + i , y - 1, 0));
 		}
 
         out_cimage.push(_cpoint('\\', xoffset + x - 1, 0, 0));
@@ -419,64 +431,78 @@ var html_render = (function() {
             var line = lines[idx].trim();
 
             for (i = 1; i < x-1; ++i) {
-                out_cimage.push(_cpoint(' ', xoffset + i, idx + 1, 0)); 
+                out_cimage.push(_cpoint(' ', xoffset + i, idx + 1, 0));
             }
 
             for (i = 2; i < 2 + line.length; ++i) {
-                out_cimage.push(_cpoint(line.charAt(i-2), xoffset + i, idx + 1, 0)); 
+                out_cimage.push(_cpoint(line.charAt(i-2), xoffset + i, idx + 1, 0));
             }
         }
-                
+
 		return out_cimage;
 	}
 
 	function _cmessage(message, line_len, leftToRight, isSelfMessage) {
 		var cpoints = [];
 
+		var lines = message.split('\\n');
+		var t_length = 0;
+		for(var idx = 0; idx < lines.length; idx++) {
+			if(lines[idx].length > t_length) {
+				t_length = lines[idx].trim().length;
+			}
+		}
+
 		if (isSelfMessage) {
-			line_len = message.length;
+			line_len = t_length;
 
 			//message
-			for (var i = 0; i < message.length; ++i) {
-				cpoints.push(_cpoint(message.charAt(i), 1 + i, 1, 0));
+			for(var idx = 0; idx < lines.length; idx++) {
+				for (var i = 0; i < lines[idx].length; ++i) {
+					cpoints.push(_cpoint(lines[idx].charAt(i), 1 + i, 1 + idx, 0));
+				}
 			}
-			
+
 			//upper line
 			for (var i = 0; i < line_len + 1; ++i) {
-				cpoints.push(_cpoint('-', i, 2, 0));
+				cpoints.push(_cpoint('-', i, 1 + lines.length, 0));
 			}
 
-            //bar 
-			cpoints.push(_cpoint('|', line_len, 3, 0));
+            //bar
+			cpoints.push(_cpoint('|', line_len, 2 + lines.length, 0));
 
 			//lower line
-			cpoints.push(_cpoint('<', 0, 4, 0));
+			cpoints.push(_cpoint('<', 0, 3 + lines.length, 0));
 			for (var i = 1; i < line_len + 1; ++i) {
-				cpoints.push(_cpoint('-', i, 4, 0));
+				cpoints.push(_cpoint('-', i, 3 + lines.length, 0));
 			}
 		}
 		else if (leftToRight) {
 			//message
-			for (var i = 0; i < message.length; ++i) {
-				cpoints.push(_cpoint(message.charAt(i), 1 + i, 1, 0));
+			for(var idx = 0; idx < lines.length; idx++) {
+				for (var i = 0; i < lines[idx].length; ++i) {
+					cpoints.push(_cpoint(lines[idx].charAt(i), 1 + i, 1 + idx, 0));
+				}
 			}
 
 			//arrow
 			for (var i = 0; i < line_len - 1; ++i) {
-				cpoints.push(_cpoint('-', i, 2, 0));
+				cpoints.push(_cpoint('-', i, 1 + lines.length, 0));
 			}
-			cpoints.push(_cpoint('>', line_len - 1, 2, 0));
+			cpoints.push(_cpoint('>', line_len - 1, 1 + lines.length, 0));
 		}
 		else {
 			//message
-			for (var i = 0; i < message.length; ++i) {
-				cpoints.push(_cpoint(message.charAt(message.length - 1 - i), line_len - 1 - i - 1, 1, 0));
+			for(var idx = 0; idx < lines.length; idx++) {
+				for (var i = 0; i < lines[idx].length; ++i) {
+					cpoints.push(_cpoint(lines[idx].charAt(lines[idx].length - 1 - i), line_len - 1 - i - 1, 1 + idx, 0));
+				}
 			}
 
 			//arrow
-			cpoints.push(_cpoint('<', 0, 2, 0));
+			cpoints.push(_cpoint('<', 0, 1 + lines.length, 0));
 			for (var i = 1; i < line_len; ++i) {
-				cpoints.push(_cpoint('-', i, 2, 0));
+				cpoints.push(_cpoint('-', i, 1 + lines.length, 0));
 			}
 		}
 
@@ -490,11 +516,11 @@ var html_render = (function() {
 	*/
 	function _cbox(obj) {
 		var i;
-		var x = obj.length % 2 ? obj.length + 4 : obj.length + 5;	
+		var x = obj.length % 2 ? obj.length + 4 : obj.length + 5;
 		var y = 3;
-		
+
 		var out_cimage = [];
-	
+
 		//up and bottom line
 		out_cimage.push(_cpoint('+', 0, 0, 0));
 		out_cimage.push(_cpoint('+', x - 1, 0, 0));
@@ -507,7 +533,7 @@ var html_render = (function() {
 
 		//left and right line
 		out_cimage.push(_cpoint('|', 0, 1, 0));//m[1][0] = _cpoint('|', 0);
-		out_cimage.push(_cpoint('|', x - 1, 1, 0));//m[1][x-1] = _cpoint('|', 0); 
+		out_cimage.push(_cpoint('|', x - 1, 1, 0));//m[1][x-1] = _cpoint('|', 0);
 
 		//name
 		for (i = 1; i < x-1; ++i) {
@@ -531,7 +557,7 @@ var html_render = (function() {
 	function _object_width(name) {
 		return name.length % 2 ? name.length + 4 : name.length + 5;
 	}
-	
+
 
 	return {
 		to_html : _to_html,
@@ -571,7 +597,7 @@ var util = (function() {
 		is_whitespace: function(in_c) {
 			return ' ' == in_c || '\t' == in_c;
 		},
-		
+
 		trim: function(in_str) {
 			return in_str.replace(/^\s+|\s+$/g, '')
 		}
@@ -594,13 +620,13 @@ var parser = (function() {
 		var buffer_length = in_buffer.length;
 		var state = 0;
 		var tmp_buffer = '';
-	
+
 		var _back = function() {
 			tmp_buffer = '';
 			idx--;
 			state = 0;
 		};
-		
+
 		//state machine
 		while (idx < buffer_length) {
 			var c = in_buffer.charAt(idx++);
@@ -630,19 +656,19 @@ var parser = (function() {
 						r_tokens.push(_token('word', c));
 					}
 					break;
-					
+
 				case 1: //word
-					if (util.is_alpha_digit(c) || util.is_underscore(c)) { 
+					if (util.is_alpha_digit(c) || util.is_underscore(c)) {
 						tmp_buffer = tmp_buffer + c;
 					}
 					else {
 						r_tokens.push(_token('word', tmp_buffer));
 						_back();
 					}
-					
+
 					break;
-					
-				case 2: //arrow 
+
+				case 2: //arrow
 					if ('>' == c) {
 						tmp_buffer += c;
 						r_tokens.push(_token('arrow', tmp_buffer));
@@ -665,7 +691,7 @@ var parser = (function() {
 		return r_tokens;
 	};
 
-	//parse program to abstract syntax tree 
+	//parse program to abstract syntax tree
 	function sequence_diagram(src) {
 		var tokens = _lexical_analyze(src);
 		//console.log('tokens:', tokens);
@@ -677,10 +703,10 @@ var parser = (function() {
 		var r = _statements(tokens, 0);
 
 		if (null != r && r.length == tokens.length) {
-			return { type: 'sequence_diagram', attr: {}, children : [ r ], offset : 0, length : tokens.length } 
+			return { type: 'sequence_diagram', attr: {}, children : [ r ], offset : 0, length : tokens.length }
 		}
 
-		return null; 
+		return null;
 	}
 
 	function _statements(in_tokens, in_offset) {
@@ -706,6 +732,9 @@ var parser = (function() {
 				}
 				else if ('note' == value) {
 					r = _note_statement(in_tokens, idx);
+				}
+				else if ('space' == value) {
+					r = _space_statement(in_tokens, idx);
 				}
 				else {
 					r = _message_statement(in_tokens, idx);
@@ -742,14 +771,14 @@ var parser = (function() {
 	}
 
 	function _is_keyword(in_word) {
-		var keywords = { 'alt' : true, 'opt' : true, 'loop' : true, 'note' : true };
+		var keywords = { 'alt' : true, 'opt' : true, 'loop' : true, 'note' : true, 'space' : true };
 		return true == keywords[in_word];
 	}
 
 	function _object_declaration(in_tokens, in_offset) {
-		var match_result = { 
+		var match_result = {
 			type : 'object_declaration',
-	       	attr : { name : null, names : [] }, 
+	       	attr : { name : null, names : [] },
 			offset : in_offset,
 			length : 0
 		};
@@ -783,7 +812,7 @@ var parser = (function() {
 					else if ('word' != type || _is_keyword(value) || !_is_object(value)) {
 						return null;
 					}
-						
+
 					match_result.attr.names.push(value);
 					break;
 			}
@@ -792,13 +821,54 @@ var parser = (function() {
 		if (2 != state) {
 			return null;
 		}
-		
+
+		match_result.length = i - in_offset;
+		return match_result;
+	}
+
+	function _space_statement(in_tokens, in_offset) {
+		var match_result = {
+			type : 'space_statement',
+	       	attr : { object : null, side : null, content: ''},
+			offset : in_offset,
+			length : 0
+		};
+
+		var state = 0;
+		for (var i = in_offset; i < in_tokens.length && 2 != state; ++i) {
+			var type = in_tokens[i].type;
+			var value = in_tokens[i].value;
+
+			switch(state) {
+				case 0: //'space'
+					if ('space' == type) {
+						continue;
+					}
+					if ('space' != value) {
+						return null;
+					}
+					state = 1;
+					break;
+				case 1: //number
+					if ('space' == type) {
+						continue;
+					}
+					var gap_size = parseInt(value);
+					if (isNaN(gap_size)) {
+						return null;
+					}
+					match_result.attr.gap_size = gap_size;
+					state = 2;
+					break;
+			}
+		}
+
 		match_result.length = i - in_offset;
 		return match_result;
 	}
 
 	function _note_statement(in_tokens, in_offset) {
-		var match_result = { 
+		var match_result = {
 			type : 'note_statement',
 	       	attr : { object : null, side : null, content: ''},
 			offset : in_offset,
@@ -854,17 +924,17 @@ var parser = (function() {
 						continue;
 					}
 					if (type != ':') {
-						return null;	
+						return null;
 					}
 					state = 5;
 					break;
 				case 5: //content
 					if (type == ';' || type == 'newline' || type == 'eof') {
 						state = 6;
-						break;	
+						break;
 					}
 					if ('space' == type) {
-						'' != match_result.attr.content && (match_result.attr.content += value); 
+						'' != match_result.attr.content && (match_result.attr.content += value);
 					}
 					else {
 						match_result.attr.content += value;
@@ -882,12 +952,12 @@ var parser = (function() {
 	}
 
 	function _message_statement(in_tokens, in_offset) {
-		var match_result = { 
-			type : 'message_statement', 
+		var match_result = {
+			type : 'message_statement',
 			attr: { sender : null, receiver : null, message : '' },
 			children : [],
-			offset : in_offset, 
-			length : 0 
+			offset : in_offset,
+			length : 0
 		};
 
 		var state = 0;
@@ -931,17 +1001,17 @@ var parser = (function() {
 					}
 					if (type == ';' || type == 'newline') {
 						state = 5;
-						break;	
+						break;
 					}
 					if (type != ':') {
-						return null;	
+						return null;
 					}
 					state = 4;
 					break;
 				case 4:
 					if (type == ';' || type == 'newline' || type == 'eof') {
 						state = 5;
-						break;	
+						break;
 					}
 
 					//ignore leading spaces
