@@ -64,6 +64,7 @@ var html_render = (function() {
   //convert ccanvas to DOM element
   function _to_html(in_m) {
     var pre = document.createElement('pre');
+    pre.id = 'diagram';
 
     for (y = 0; y < in_m.length; ++y) {
       for (x = 0; x < in_m[y].length; ++x) {
@@ -634,6 +635,9 @@ var parser = (function() {
             tmp_buffer = c;
             state = 1;
           }
+          else if ('/' == c) {
+            state = 3;
+          }
           else if ('-' == c) {
             tmp_buffer = c;
             state = 2;
@@ -678,6 +682,19 @@ var parser = (function() {
             _back();
           }
           break;
+
+        case 3: //second slash in comment
+          if ('/' == c) {
+            state = 4;
+          }
+          break;
+
+        case 4: //comment line
+          if ('\n' == c || '\r' == c) {
+            // r_tokens.push(_token('newline', c));
+            state = 0;
+          }
+        break;
 
         default:
           return null;
